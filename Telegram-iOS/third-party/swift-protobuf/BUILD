@@ -1,0 +1,8 @@
+load("@build_bazel_rules_swift//swift:swift.bzl", "swift_library")
+
+swift_library(
+    name = "SwiftProtobuf",
+    module_name = "SwiftProtobuf",
+    srcs = glob(["Sources/SwiftProtobuf/**/*.swift"]),
+    visibility = ["//visibility:public"],
+)
