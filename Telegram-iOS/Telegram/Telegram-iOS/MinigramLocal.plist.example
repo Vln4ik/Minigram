@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>MINIGRAM_PROXY_ENABLED</key>
+    <true/>
+    <key>MINIGRAM_PROXY_OVERRIDE</key>
+    <true/>
+    <key>MINIGRAM_PROXY_USE_FOR_CALLS</key>
+    <true/>
+    <key>MINIGRAM_PROXY_HOST</key>
+    <string>82.26.171.24</string>
+    <key>MINIGRAM_PROXY_PORT</key>
+    <integer>1080</integer>
+    <key>MINIGRAM_PROXY_TYPE</key>
+    <string>socks5</string>
+    <key>MINIGRAM_PROXY_USER</key>
+    <string>socksuser</string>
+    <key>MINIGRAM_PROXY_PASS</key>
+    <string>your-password-here</string>
+    <!-- For MTProto proxies:
+    <key>MINIGRAM_PROXY_TYPE</key>
+    <string>mtproto</string>
+    <key>MINIGRAM_PROXY_SECRET</key>
+    <string>your-secret-hex</string>
+    -->
+</dict>
+</plist>

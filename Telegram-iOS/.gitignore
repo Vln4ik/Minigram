@@ -78,3 +78,7 @@ xcode-files
 .bsp/**
 /.claude/
 /buildbox/*
+
+# Local-only Minigram proxy config
+Telegram/Telegram-iOS/MinigramLocal.xcconfig
+Telegram/Telegram-iOS/MinigramLocal.plist

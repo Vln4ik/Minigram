@@ -13,32 +13,89 @@ enum MinigramProxyConfig {
         ProcessInfo.processInfo.environment[key]
     }
 
-    private static func envBool(_ key: String, defaultValue: Bool) -> Bool {
-        guard let value = env(key)?.lowercased() else { return defaultValue }
-        return value == "1" || value == "true" || value == "yes"
+    private static let localPlist: [String: Any]? = {
+        guard let url = Bundle.main.url(forResource: "MinigramLocal", withExtension: "plist"),
+              let data = try? Data(contentsOf: url),
+              let object = try? PropertyListSerialization.propertyList(from: data, format: nil),
+              let dict = object as? [String: Any] else {
+            return nil
+        }
+        return dict
+    }()
+
+    private static func rawValue(_ key: String) -> Any? {
+        if let value = env(key) {
+            return value
+        }
+        if let value = localPlist?[key] {
+            return value
+        }
+        return Bundle.main.object(forInfoDictionaryKey: key)
     }
 
-    private static func envInt32(_ key: String, defaultValue: Int32) -> Int32 {
-        guard let value = env(key), let parsed = Int32(value) else { return defaultValue }
-        return parsed
+    private static func stringValue(_ key: String) -> String? {
+        guard let value = rawValue(key) else { return nil }
+        if let string = value as? String {
+            let trimmed = string.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.hasPrefix("$(") && trimmed.hasSuffix(")") {
+                return nil
+            }
+            return trimmed.isEmpty ? nil : trimmed
+        }
+        if let number = value as? NSNumber {
+            return number.stringValue
+        }
+        return nil
     }
 
-    static let enabled = envBool("MINIGRAM_PROXY_ENABLED", defaultValue: false)
-    static let overrideExisting = envBool("MINIGRAM_PROXY_OVERRIDE", defaultValue: true)
-    static let useForCalls = envBool("MINIGRAM_PROXY_USE_FOR_CALLS", defaultValue: true)
+    private static func boolValue(_ key: String, defaultValue: Bool) -> Bool {
+        guard let value = rawValue(key) else { return defaultValue }
+        if let bool = value as? Bool {
+            return bool
+        }
+        if let number = value as? NSNumber {
+            return number.boolValue
+        }
+        if let string = value as? String {
+            switch string.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
+            case "1", "true", "yes", "y":
+                return true
+            case "0", "false", "no", "n":
+                return false
+            default:
+                break
+            }
+        }
+        return defaultValue
+    }
 
-    static let host = env("MINIGRAM_PROXY_HOST") ?? ""
-    static let port: Int32 = envInt32("MINIGRAM_PROXY_PORT", defaultValue: 0)
+    private static func int32Value(_ key: String, defaultValue: Int32) -> Int32 {
+        guard let value = rawValue(key) else { return defaultValue }
+        if let number = value as? NSNumber {
+            return number.int32Value
+        }
+        if let string = value as? String, let parsed = Int32(string) {
+            return parsed
+        }
+        return defaultValue
+    }
+
+    static let enabled = boolValue("MINIGRAM_PROXY_ENABLED", defaultValue: false)
+    static let overrideExisting = boolValue("MINIGRAM_PROXY_OVERRIDE", defaultValue: true)
+    static let useForCalls = boolValue("MINIGRAM_PROXY_USE_FOR_CALLS", defaultValue: true)
+
+    static let host = stringValue("MINIGRAM_PROXY_HOST") ?? ""
+    static let port: Int32 = int32Value("MINIGRAM_PROXY_PORT", defaultValue: 0)
 
     static let mode: MinigramProxyMode = {
-        let type = env("MINIGRAM_PROXY_TYPE")?.lowercased() ?? "socks5"
+        let type = stringValue("MINIGRAM_PROXY_TYPE")?.lowercased() ?? "socks5"
         switch type {
         case "mtp", "mtproto":
-            return .mtproto(secretHex: env("MINIGRAM_PROXY_SECRET") ?? "")
+            return .mtproto(secretHex: stringValue("MINIGRAM_PROXY_SECRET") ?? "")
         default:
             return .socks5(
-                username: env("MINIGRAM_PROXY_USER"),
-                password: env("MINIGRAM_PROXY_PASS")
+                username: stringValue("MINIGRAM_PROXY_USER"),
+                password: stringValue("MINIGRAM_PROXY_PASS")
             )
         }
     }()

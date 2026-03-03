@@ -1,0 +1,16 @@
+// Copy to MinigramLocal.xcconfig (ignored by git) and fill in values.
+// These values are injected into Info.plist via $(...) placeholders.
+
+MINIGRAM_PROXY_ENABLED = 1
+MINIGRAM_PROXY_OVERRIDE = 1
+MINIGRAM_PROXY_USE_FOR_CALLS = 1
+
+MINIGRAM_PROXY_HOST = 82.26.171.24
+MINIGRAM_PROXY_PORT = 1080
+MINIGRAM_PROXY_TYPE = socks5
+MINIGRAM_PROXY_USER = socksuser
+MINIGRAM_PROXY_PASS = your-password-here
+
+// For MTProto proxies:
+// MINIGRAM_PROXY_TYPE = mtproto
+// MINIGRAM_PROXY_SECRET = your-secret-hex
