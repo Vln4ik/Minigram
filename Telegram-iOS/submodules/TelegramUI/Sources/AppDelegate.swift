@@ -930,6 +930,7 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
 
         telegramUIDeclareEncodables()
         initializeAccountManagement()
+        applyMinigramProxySettingsIfNeeded(accountManager: accountManager)
         
         let pushRegistry = PKPushRegistry(queue: .main)
         if #available(iOS 9.0, *) {

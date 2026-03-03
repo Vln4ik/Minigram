@@ -938,6 +938,10 @@ public final class OngoingCallContext {
         |> deliverOn(queue)).start(next: { [weak self] _ in
             if let strongSelf = self {
                 var allowP2P = allowP2P
+                if proxyServer != nil {
+                    // Force relay when a proxy is configured for calls.
+                    allowP2P = false
+                }
                 
                 var voipProxyServer: VoipProxyServerWebrtc?
                 if let proxyServer = proxyServer {
